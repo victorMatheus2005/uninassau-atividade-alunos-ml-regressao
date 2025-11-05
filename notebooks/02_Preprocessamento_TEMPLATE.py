@@ -27,17 +27,19 @@
 # ---
 # ## 📦 SETUP
 
+import os
+import warnings
+
+import joblib
+import matplotlib.pyplot as plt
+import numpy as np
 # %%
 # Imports
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
-import joblib
-import os
-import warnings
+
 warnings.filterwarnings('ignore')
 
 # Configurações de visualização
@@ -94,6 +96,14 @@ print("\n📊 Resumo:")
 print(missing_info.to_string(index=False))
 
 rows_before = len(df)
+
+# %% [markdown]
+# ### 🔍 Exemplo da aula (Etapa 2 - Imputação)
+# Durante a demonstração, analisamos duas colunas reais do dataset:
+# - `sleep_hours`: skew ≈ 0.60 → distribuição quase simétrica → imputação com **média ≈ 7.00h**.
+# - `study_hours_week`: skew ≈ 7.11 → distribuição muito assimétrica → imputação com **mediana ≈ 9.96h**, pois a média (≃10.60h) foi puxada por outliers (até 113h/semana!).
+#
+# Use esse raciocínio como referência. Você deve recalcular os valores ao executar o notebook e registrar suas decisões nas respostas (Q1 e Q2).
 
 # %%
 # TODO 1.1: Remover linhas com muitos valores faltantes (> 50%)
@@ -219,12 +229,21 @@ print(outlier_df.to_string(index=False))
 
 total_outliers = outlier_df['Outliers'].sum()
 
+# %% [markdown]
+# ### 📊 Lendo um boxplot (relembrando da aula)
+# - **Linha central**: mediana (valor típico da turma).
+# - **Caixa**: intervalo interquartil (entre Q1 e Q3) onde estão 50% dos alunos.
+# - **Bigodes**: limites Q1 − 1.5×IQR e Q3 + 1.5×IQR.
+# - **Pontinhos fora dos bigodes**: outliers que merecem investigação.
+# Use esse gráfico para justificar decisões (ex.: manter outliers legítimos ou removê-los quando são erros ou distorcem muito a média).
+
 # %%
 # TODO 2.1: Decidir estratégia para cada variável
 # Exemplos:
 #   - age: remover se < 17 ou > 30
 #   - attendance_rate: remover se < 0 ou > 100
 #   - sleep_hours: remover se < 3 ou > 12
+#   - study_hours_week: na aula vimos outliers > 50h/semana; avalie se faz sentido tratá-los ou mantê-los
 
 # strategies = {
 #     'age': {'condition': lambda x: (x < 17) | (x > 30)},
@@ -722,6 +741,13 @@ print("\nℹ️  Info do dataset:")
 print(df.info())
 
 # %% [markdown]
+# ### ℹ️ Nota sobre R² (coeficiente de determinação)
+# Na próxima etapa de modelagem, você avaliará os modelos com métricas como **R²**.
+# - **O que significa:** porcentagem da variação da `final_grade` explicada pelas features. Vai de 0 a 1 (quanto mais próximo de 1, melhor o ajuste). Valores negativos indicam que o modelo performou pior do que usar a média como previsão.
+# - **Por que importa aqui:** um pré-processamento consistente (tratamento de missing, outliers, encoding, normalização) ajuda o modelo a alcançar R² mais alto e mais confiável.
+# - **Aplicação prática:** quando comparar modelos na Etapa 3, registre a métrica R² e comente como as escolhas desta etapa (ex.: remover outliers extremos) impactaram o resultado.
+
+# %% [markdown]
 # ---
 # ## ✅ CHECKLIST FINAL
 #
@@ -735,5 +761,7 @@ print(df.info())
 # - [ ] Código documentado com markdown
 # - [ ] Commit no GitHub
 #
+# **Parabéns! Etapa 2 completa!** 🎉
+# **Próximo passo:** Etapa 3 - Modelos de Machine Learning
 # **Parabéns! Etapa 2 completa!** 🎉
 # **Próximo passo:** Etapa 3 - Modelos de Machine Learning
